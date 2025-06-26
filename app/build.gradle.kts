@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":FlexLogger"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
