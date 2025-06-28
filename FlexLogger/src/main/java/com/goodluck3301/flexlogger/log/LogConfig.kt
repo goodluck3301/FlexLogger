@@ -1,6 +1,7 @@
 package com.goodluck3301.flexlogger.log
 
 import android.content.Context
+import java.io.File
 
 /**
  * Holds the configuration for the FlexLogger instance.
@@ -45,4 +46,18 @@ data class LogConfig(
     ) {
         addDestination(FileDestination(context, fileName, directory, maxFileSizeMb))
     }
+
+    /**
+     * Convenience function to add a file logging destination with size-based rotation.
+     *
+     * @param logFile The specific File object representing the log file's full path and name.
+     * @param maxFileSizeMb The maximum size in megabytes before the oldest log entries are trimmed.
+     */
+    fun file(
+        logFile: File,
+        maxFileSizeMb: Int = 5
+    ) {
+        addDestination(FileDestinationToSpecificFolder(logFile, maxFileSizeMb))
+    }
+
 }
