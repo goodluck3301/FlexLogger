@@ -9,7 +9,7 @@
 
 *A flexible, configurable, and powerful logging utility for Android applications*
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Examples](#-examples) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](https://goodluck3301.github.io/flexlogger.html) • [Examples](#-examples) • [Contributing](#-contributing)
 
 </div>
 
@@ -416,6 +416,6 @@ SOFTWARE.
 
 Made with ❤️ for the Android community
 
-[Report Bug](https://github.com/goodluck3301/FlexLogger/issues) • [Request Feature](https://github.com/goodluck3301/FlexLogger/issues) • [Documentation](https://github.com/goodluck3301/FlexLogger/wiki)
+[Report Bug](https://github.com/goodluck3301/FlexLogger/issues) • [Request Feature](https://github.com/goodluck3301/FlexLogger/issues) • [Documentation](https://goodluck3301.github.io/flexlogger.html)
 
 </div>
