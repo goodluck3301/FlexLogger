@@ -73,12 +73,12 @@ abstract class BaseFileDestination(
                         }
                         // Log a message to Logcat about the file trimming, not to the file itself
                         // to avoid potential infinite loops if the trimming message itself pushes over the limit.
-                        Log.i("FileDestination", "Log file '${logFile.name}' trimmed. Kept ${linesToKeep.size} of ${allLines.size} lines.")
+                        // println("Log file '${logFile.name}' trimmed. Kept ${linesToKeep.size} of ${allLines.size} lines.")
                     } else Unit
                 } else Unit
             } catch (e: Exception) {
                 // Fallback to Logcat if file writing or management fails for any reason.
-                Log.e("FileDestination", "Failed to write or manage log file: ${logFile.absolutePath}", e)
+                // println("Failed to write or manage log file: ${logFile.absolutePath}")
             }
         }
     }
