@@ -364,10 +364,6 @@ FlexLogger.init {
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
 ### Development Setup
 
 1. Clone the repository
