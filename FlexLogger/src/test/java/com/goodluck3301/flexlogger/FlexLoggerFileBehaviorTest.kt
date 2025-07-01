@@ -66,7 +66,7 @@ class FlexLoggerFileBehaviorTest {
     }
 
     @Test
-    fun `if the log file size exceeds 1MB, delete old logs and append new logs`() = runBlocking {
+    fun `if the log file size exceeds 1MB, delete old logs and append new logs`() {
         if (!logDir.exists()) logDir.mkdirs()
 
         val tempLogFile = File(logDir, "1mb_flexlogger_test_log.txt")
@@ -77,8 +77,6 @@ class FlexLoggerFileBehaviorTest {
 
         val originalFile = File(resourceUrl.toURI())
         tempLogFile.writeBytes(originalFile.readBytes())
-
-        val sizeInKilobytes =  tempLogFile.length() / 1024
 
         val newMessage = "New message"
 
@@ -105,6 +103,6 @@ class FlexLoggerFileBehaviorTest {
 
         assertTrue(fileContent.contains(newMessage))
         assertEquals(count, newLogCount)
-        assertEquals(sizeInKilobytes, finalFileSizeInKilobytes)
+        assertEquals(1024, finalFileSizeInKilobytes)
     }
 }
