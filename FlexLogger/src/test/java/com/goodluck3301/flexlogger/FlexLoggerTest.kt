@@ -84,6 +84,26 @@ class FlexLoggerTest {
     }
 
     @Test
+    fun `log invalid JSON without '{' symbol`() {
+        val invalidJsonString = "name: Levon}"
+        FlexLogger.json(jsonString = invalidJsonString)
+        verify(mockDestination, atLeastOnce()).send(any(), contains("Invalid JSON format:"))
+    }
+
+    @Test
+    fun `log empty JSON`() {
+        val emptyJson = ""
+        FlexLogger.json(jsonString = emptyJson)
+        verify(mockDestination, atLeastOnce()).send(any(), contains("Received null or empty JSON string."))
+    }
+
+    @Test
+    fun `log null JSON`() {
+        FlexLogger.json("JsonTag", LogLevel.INFO, null)
+        verify(mockDestination, atLeastOnce()).send(any(), contains("Received null or empty JSON string."))
+    }
+
+    @Test
     fun `log valid XML`() {
         val xml = "<note><to>User</to><from>Bot</from></note>"
         FlexLogger.xml("XmlTag", LogLevel.INFO, xml)
@@ -96,4 +116,21 @@ class FlexLoggerTest {
         FlexLogger.xml("XmlTag", LogLevel.INFO, badXml)
         verify(mockDestination, atLeastOnce()).send(any(), contains("Failed to parse XML"))
     }
+
+    @Test
+    fun `log empty XML`() {
+        val emptyXml = ""
+        FlexLogger.xml("XmlTag", LogLevel.DEBUG, emptyXml)
+        verify(mockDestination, atLeastOnce()).send(any(), contains("Received null or empty XML string."))
+    }
+
+    @Test
+    fun `log null XML`() {
+        val nullString: String? = null
+        FlexLogger.xml(xmlString = nullString)
+        verify(mockDestination, atLeastOnce()).send(
+            any(), contains("Received null or empty XML string.")
+        )
+    }
+
 }
