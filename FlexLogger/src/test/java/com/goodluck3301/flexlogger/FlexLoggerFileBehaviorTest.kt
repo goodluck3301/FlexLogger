@@ -3,12 +3,14 @@ package com.goodluck3301.flexlogger
 import com.goodluck3301.flexlogger.log.FlexLogger
 import com.goodluck3301.flexlogger.log.LogDestination
 import com.goodluck3301.flexlogger.log.LogLevel
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -105,4 +107,60 @@ class FlexLoggerFileBehaviorTest {
         assertEquals(count, newLogCount)
         assertEquals(1024, finalFileSizeInKilobytes)
     }
+
+    @Test
+    fun `logs messages from multiple threads concurrently without data loss`() {
+        val mockDestination = MockLogDestination()
+
+        FlexLogger.init {
+            enabled = true
+            minLevel = LogLevel.VERBOSE
+            addDestination(mockDestination)
+        }
+
+        val threadCount = 10
+        val messagesPerThread = 100
+        val totalMessages = threadCount * messagesPerThread
+        val executor = Executors.newFixedThreadPool(threadCount)
+
+        val latch = CountDownLatch(threadCount)
+
+        for (threadId in 1..threadCount) {
+            executor.submit {
+                try {
+                    for (messageNum in 1..messagesPerThread) {
+                        FlexLogger.d("Thread-$threadId", "Thread-$threadId: Message $messageNum")
+                    }
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+        val allThreadsFinished = latch.await(10, TimeUnit.SECONDS)
+        executor.shutdown()
+
+        assertTrue(allThreadsFinished)
+
+        assertEquals(
+            totalMessages,
+            mockDestination.logs.size
+        )
+
+        val logsByThreadTag = mockDestination.logs
+            .mapNotNull { log ->
+                Regex("""Thread-\d+""").find(log)?.value
+            }
+            .groupBy { it }
+
+        assertEquals(threadCount, logsByThreadTag.size)
+
+        logsByThreadTag.values.forEach { logsForOneThread ->
+            assertEquals(
+                messagesPerThread,
+                logsForOneThread.size
+            )
+        }
+    }
+
 }
+
