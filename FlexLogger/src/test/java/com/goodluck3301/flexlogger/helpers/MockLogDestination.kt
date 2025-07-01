@@ -1,4 +1,4 @@
-package com.goodluck3301.flexlogger
+package com.goodluck3301.flexlogger.helpers
 
 import com.goodluck3301.flexlogger.log.*
 import java.util.Collections.synchronizedList

@@ -1,5 +1,6 @@
 package com.goodluck3301.flexlogger
 
+import com.goodluck3301.flexlogger.helpers.MockLogDestination
 import com.goodluck3301.flexlogger.log.FlexLogger
 import com.goodluck3301.flexlogger.log.LogDestination
 import com.goodluck3301.flexlogger.log.LogLevel

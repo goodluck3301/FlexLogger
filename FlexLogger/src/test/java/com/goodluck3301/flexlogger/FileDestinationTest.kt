@@ -1,8 +1,8 @@
 package com.goodluck3301.flexlogger
 
 import android.content.Context
-import com.goodluck3301.flexlogger.TestUtils.getLogFile
-import com.goodluck3301.flexlogger.TestUtils.getMaxFileSizeMb
+import com.goodluck3301.flexlogger.helpers.TestUtils.getLogFile
+import com.goodluck3301.flexlogger.helpers.TestUtils.getMaxFileSizeMb
 import com.goodluck3301.flexlogger.log.FileDestination
 import com.goodluck3301.flexlogger.log.LogLevel
 import com.goodluck3301.flexlogger.log.LogMessage
