@@ -84,17 +84,19 @@ abstract class BaseFileDestination(
                 } else break
             }
 
-            // If we actually trimmed some lines (i.e., not all lines were kept)
             if (linesToKeep.size < allLines.size) {
-                // Overwrite the file with trimmed content
-                FileWriter(logFile, false).use { writer ->
+                // Create a temporary file in the same directory to safely write trimmed logs
+                val tempFile = File(logFile.parentFile, "${logFile.name}.tmp")
+
+                // Write the trimmed log content to the temporary file
+                FileWriter(tempFile, false).use { writer ->
                     writer.write(linesToKeep.joinToString("\n"))
-                    if (linesToKeep.isNotEmpty()) {
-                        writer.append("\n") // Ensure a final newline if content exists
-                    }
+                    if (linesToKeep.isNotEmpty()) writer.append("\n")
                 }
-                // Log a message to Logcat about the file trimming, not to the file itself
-                // to avoid potential infinite loops if the trimming message itself pushes over the limit.
+
+                // Delete the original log file and replace it with the trimmed temp file
+                if (logFile.delete())
+                    tempFile.renameTo(logFile) // Rename temp file to original log file name
             }
         }
     }
