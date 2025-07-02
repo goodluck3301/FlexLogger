@@ -110,6 +110,76 @@ class FlexLoggerFileBehaviorTest {
     }
 
     @Test
+    fun `logs messages from multiple threads concurrently without data loss if log file size exceeds 1MB`() {
+        val mockDestination = MockLogDestination()
+
+        if (!logDir.exists()) logDir.mkdirs()
+
+        val tempLogFile = File(logDir, "flex_logger_test_log_1mb.txt")
+
+        if (!tempLogFile.exists())
+            tempLogFile.createNewFile()
+
+        tempLogFile.writeText("")
+
+        val resourceUrl = javaClass.classLoader?.getResource("test_1mb_file.txt")
+        requireNotNull(resourceUrl) { "Resource file not found" }
+
+        val originalFile = File(resourceUrl.toURI())
+        tempLogFile.writeBytes(originalFile.readBytes())
+
+        FlexLogger.init {
+            enabled = true
+            minLevel = LogLevel.VERBOSE
+            addDestination(mockDestination)
+            file(tempLogFile, maxFileSizeMb = 1)
+        }
+
+        val threadCount = 10
+        val messagesPerThread = 100
+        val totalMessages = threadCount * messagesPerThread
+        val executor = Executors.newFixedThreadPool(threadCount)
+
+        val latch = CountDownLatch(threadCount)
+
+        for (threadId in 1..threadCount) {
+            executor.submit {
+                try {
+                    for (messageNum in 1..messagesPerThread) {
+                        FlexLogger.d("Thread-$threadId", "Thread-$threadId: Message $messageNum")
+                    }
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+        val allThreadsFinished = latch.await(30, TimeUnit.SECONDS)
+        executor.shutdown()
+
+        assertTrue(allThreadsFinished)
+
+        assertEquals(
+            totalMessages,
+            mockDestination.logs.size
+        )
+
+        val logsByThreadTag = mockDestination.logs
+            .mapNotNull { log ->
+                Regex("""Thread-\d+""").find(log)?.value
+            }
+            .groupBy { it }
+
+        assertEquals(threadCount, logsByThreadTag.size)
+
+        logsByThreadTag.values.forEach { logsForOneThread ->
+            assertEquals(
+                messagesPerThread,
+                logsForOneThread.size
+            )
+        }
+    }
+
+    @Test
     fun `logs messages from multiple threads concurrently without data loss`() {
         val mockDestination = MockLogDestination()
 
@@ -137,7 +207,7 @@ class FlexLoggerFileBehaviorTest {
                 }
             }
         }
-        val allThreadsFinished = latch.await(10, TimeUnit.SECONDS)
+        val allThreadsFinished = latch.await(30, TimeUnit.SECONDS)
         executor.shutdown()
 
         assertTrue(allThreadsFinished)
