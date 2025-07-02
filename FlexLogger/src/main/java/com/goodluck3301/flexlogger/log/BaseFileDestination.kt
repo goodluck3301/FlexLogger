@@ -21,6 +21,10 @@ abstract class BaseFileDestination(
     private val logExecutor = Executors.newSingleThreadExecutor()
 
     init {
+        require(maxFileSizeMb <= MAX_ALLOWED_SIZE_MB) {
+            "Error: maxFileSizeMb cannot exceed ${MAX_ALLOWED_SIZE_MB}MB. Provided value was ${maxFileSizeMb}MB."
+        }
+
         // Ensure the parent directory for the log file exists.
         logFile.parentFile?.let {
             if (!it.exists()) {
@@ -93,5 +97,9 @@ abstract class BaseFileDestination(
                 // to avoid potential infinite loops if the trimming message itself pushes over the limit.
             }
         }
+    }
+
+    companion object {
+        private const val MAX_ALLOWED_SIZE_MB = 10
     }
 }
