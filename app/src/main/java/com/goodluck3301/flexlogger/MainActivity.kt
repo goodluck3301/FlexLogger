@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "FlexLogger Compose Demo",
+                text = "FlexLogger Demo",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -130,6 +130,15 @@ class MainActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
             ) { Text("Log Pretty XML") }
+
+            Button(
+                onClick = {
+                    throw Exception("Artificial crash")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) { Text("Make crash") }
         }
     }
 }

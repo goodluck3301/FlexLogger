@@ -15,6 +15,7 @@ class FlexLoggerApplication : Application() {
             enabled = true // Enable all logging for this example
             globalTagPrefix = "ComposeApp" // Custom tag prefix
             minLevel = LogLevel.VERBOSE // Log all levels
+            enableCrashLogging = true // Enable crash logging (default is true)
 
             // Add Logcat destination
             logcat()
