@@ -13,6 +13,7 @@ import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
+import kotlin.system.exitProcess
 
 /**
  * FlexLogger: A flexible, configurable logging utility for Android.
@@ -20,6 +21,7 @@ import javax.xml.transform.stream.StreamSource
  */
 object FlexLogger {
 
+    private const val JSON_INDENT = 2
     private var config = LogConfig()
     private val dateFormatter = SimpleDateFormat(config.timestampFormat, Locale.US)
 
@@ -36,6 +38,26 @@ object FlexLogger {
         if (newConfig.timestampFormat != "yyyy-MM-dd HH:mm:ss.SSS") {
             dateFormatter.applyPattern(newConfig.timestampFormat)
         }
+
+        if (newConfig.enableCrashLogging && newConfig.destinations.any { it is BaseFileDestination }) {
+            registerCrashLogger()
+        }
+    }
+
+    private fun registerCrashLogger() {
+        val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
+
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            val crashMessage = "App crashed in thread: ${thread.name}\n" + Log.getStackTraceString(throwable)
+
+            log(LogLevel.ERROR, "CRASH", crashMessage, throwable, skipLogcat = true)
+
+            // Let system or previous handler continue handling the crash
+            previousHandler?.uncaughtException(thread, throwable) ?: run {
+                android.os.Process.killProcess(android.os.Process.myPid())
+                exitProcess(0)
+            }
+        }
     }
 
     /**
@@ -45,7 +67,8 @@ object FlexLogger {
         level: LogLevel,
         tag: String?,
         message: String,
-        throwable: Throwable?
+        throwable: Throwable?,
+        skipLogcat: Boolean = false
     ) {
         // Check if logging is enabled globally and if the level is sufficient
         if (!config.enabled || level < config.minLevel) {
@@ -68,6 +91,8 @@ object FlexLogger {
         val formattedMessage = format(logMessage)
 
         config.destinations.forEach { destination ->
+            if (skipLogcat && destination is LogcatDestination)
+                return@forEach
             try {
                 destination.send(logMessage, formattedMessage)
             } catch (e: Exception) {
@@ -99,13 +124,16 @@ object FlexLogger {
 
     // Public logging functions
     fun v(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.VERBOSE, tag, message, throwable)
-    fun d(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.DEBUG, tag, message, throwable)
-    fun i(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.INFO, tag, message, throwable)
-    fun w(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.WARN, tag, message, throwable)
-    fun e(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.ERROR, tag, message, throwable)
-    fun wtf(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.ASSERT, tag, message, throwable)
 
-    private const val JSON_INDENT = 2
+    fun d(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.DEBUG, tag, message, throwable)
+
+    fun i(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.INFO, tag, message, throwable)
+
+    fun w(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.WARN, tag, message, throwable)
+
+    fun e(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.ERROR, tag, message, throwable)
+
+    fun wtf(tag: String? = null, message: String, throwable: Throwable? = null) = log(LogLevel.ASSERT, tag, message, throwable)
 
     /**
      * Logs a JSON string in a pretty-printed format.

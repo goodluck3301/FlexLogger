@@ -13,6 +13,7 @@ data class LogConfig(
     var minLevel: LogLevel = LogLevel.VERBOSE,
     var showTimestamp: Boolean = true,
     var showThreadInfo: Boolean = true,
+    var enableCrashLogging: Boolean = true,
     var timestampFormat: String = "yyyy-MM-dd HH:mm:ss.SSS",
     internal val destinations: MutableSet<LogDestination> = mutableSetOf()
 ) {
