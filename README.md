@@ -75,7 +75,7 @@ dependencyResolutionManagement {
 
 // App module
 dependencies {
-    implementation("com.github.goodluck3301:FlexLogger:flexlogger-1.0")
+    implementation("com.github.goodluck3301:FlexLogger:flexlogger-1.1")
 }
 ```
 
@@ -92,7 +92,7 @@ dependencyResolutionManagement {
 
 // App module
 dependencies {
-    implementation 'com.github.goodluck3301:FlexLogger:flexlogger-1.0'
+    implementation 'com.github.goodluck3301:FlexLogger:flexlogger-1.1'
 }
 ```
 
@@ -145,18 +145,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         // Basic logging
-        flexLogI(TAG) { "Activity created successfully" }
-        flexLogD(TAG) { "Debug information: ${someVariable}" }
+        log_i(TAG, "Activity created successfully")
+        log_d(TAG, "Debug information: ${someVariable}")
         
         // Error logging with exception
         try {
             riskyOperation()
         } catch (e: Exception) {
-            flexLogE(TAG, e) { "Operation failed" }
+            log_e(TAG, e, "Operation failed")
         }
         
         // Pretty print JSON
-        flexLogJson(TAG) { """{"user": "John", "id": 123}""" }
+        flexLogJson(TAG, """{"user": "John", "id": 123}""")
     }
 }
 ```
@@ -200,12 +200,12 @@ FlexLogger.init {
 
 | Level | Function | Description |
 |-------|----------|-------------|
-| `VERBOSE` | `flexLogV()` | Detailed information for debugging |
-| `DEBUG` | `flexLogD()` | Debug information for development |
-| `INFO` | `flexLogI()` | General information messages |
-| `WARN` | `flexLogW()` | Warning messages for potential issues |
-| `ERROR` | `flexLogE()` | Error messages for failures |
-| `ASSERT` | `flexLogWtf()` | Critical errors that should never happen |
+| `VERBOSE` | `log_v()` | Detailed information for debugging |
+| `DEBUG` | `log_d()` | Debug information for development |
+| `INFO` | `log_i()` | General information messages |
+| `WARN` | `log_w()` | Warning messages for potential issues |
+| `ERROR` | `log_e()` | Error messages for failures |
+| `ASSERT` | `log_wtf()` | Critical errors that should never happen |
 
 ### Logging Functions
 
@@ -252,10 +252,10 @@ class NetworkManager {
         
         return try {
             val response = apiService.getData()
-            flexLogJson(TAG, LogLevel.DEBUG) { response.body() }
+            log_json(TAG, LogLevel.DEBUG, response.body() )
             Result.success(response.data)
         } catch (e: Exception) {
-            flexLogE(TAG, e) { "Failed to fetch data from API" }
+            log_e(TAG, e, "Failed to fetch data from API")
             Result.failure(e)
         }
     }
@@ -316,9 +316,9 @@ FlexLogger.init {
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │   Application   │───▶│   FlexLogger     │───▶│  Destinations   │
 │                 │    │                  │    │                 │
-│ flexLogI(...)   │    │ ┌──────────────┐ │    │ ┌─────────────┐ │
-│ flexLogE(...)   │    │ │ LogMessage   │ │    │ │  Logcat     │ │
-│ flexLogJson()   │    │ │ - level      │ │    │ │  File       │ │
+│ log_i(...)      │    │ ┌──────────────┐ │    │ ┌─────────────┐ │
+│ log_e(...)      │    │ │ LogMessage   │ │    │ │  Logcat     │ │
+│ log_json(...)   │    │ │ - level      │ │    │ │  File       │ │
 └─────────────────┘    │ │ - tag        │ │    │ │  Custom     │ │
                        │ │ - message    │ │    │ └─────────────┘ │
                        │ │ - throwable  │ │    └─────────────────┘
