@@ -314,7 +314,7 @@ FlexLogger.init {
 
 ```mink
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Application   │───▶│   FlexLogger     │───▶│  Destinations   │
+│   Application   │───▶│   FlexLogger    │───▶│  Destinations   │
 │                 │    │                  │    │                 │
 │ log_i(...)      │    │ ┌──────────────┐ │    │ ┌─────────────┐ │
 │ log_e(...)      │    │ │ LogMessage   │ │    │ │  Logcat     │ │
