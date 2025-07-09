@@ -351,7 +351,7 @@ FlexLogger.init {
 
 ```kotlin
 FlexLogger.init {
-    enabled = !BuildConfig.DEBUG // Disable in release builds
+    enabled = BuildConfig.DEBUG   // Disable in release builds
     minLevel = LogLevel.INFO      // Only log important messages
     showThreadInfo = false        // Reduce log verbosity
     
