@@ -103,22 +103,35 @@ object FlexLogger {
     }
 
     /**
-     * Formats a LogMessage into a human-readable string based on the current configuration.
+     * Dynamically formats a LogMessage based on the 'formatOrder' list in the config.
+     * Symbols between fields are also customizable via the LoggerConfig.symbols field.
      */
     private fun format(log: LogMessage): String {
+        val symbols = config.symbols
+
         return buildString {
-            if (config.showTimestamp) {
-                append(dateFormatter.format(Date(log.timestamp)))
-                append(" ")
+            config.formatOrder.forEach { field ->
+                when (field) {
+                    LogField.TIMESTAMP -> if (config.showTimestamp) {
+                        append(dateFormatter.format(Date(log.timestamp)))
+                        append(symbols.timestampSuffix)
+                    }
+                    LogField.LEVEL -> {
+                        append(log.level.name.first())
+                        append(symbols.levelSeparator)
+                    }
+                    LogField.TAG -> append(log.tag)
+                    LogField.THREAD -> if (config.showThreadInfo) {
+                        append(symbols.threadPrefix)
+                        append(log.threadName)
+                        append(symbols.threadSuffix)
+                    }
+                    LogField.MESSAGE -> {
+                        append(symbols.messagePrefix)
+                        append(log.message)
+                    }
+                }
             }
-            append(log.level.name.first()) // V, D, I, W, E, A
-            append("/")
-            append(log.tag)
-            if (config.showThreadInfo) {
-                append("[${log.threadName}]")
-            }
-            append(": ")
-            append(log.message)
         }
     }
 

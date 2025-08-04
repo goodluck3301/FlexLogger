@@ -1,6 +1,7 @@
 package com.goodluck3301.flexlogger.log
 
 import android.content.Context
+import com.goodluck3301.flexlogger.log.LogField.Companion.allowedFields
 import java.io.File
 
 /**
@@ -15,8 +16,22 @@ data class LogConfig(
     var showThreadInfo: Boolean = true,
     var enableCrashLogging: Boolean = true,
     var timestampFormat: String = "yyyy-MM-dd HH:mm:ss.SSS",
+    var formatOrder: List<LogField> = allowedFields,
+    var symbols: LogFormatSymbols = LogFormatSymbols(),
     internal val destinations: MutableSet<LogDestination> = mutableSetOf()
 ) {
+
+    init {
+        val missing = allowedFields.toSet().filterNot { it in formatOrder }
+
+        // If any required fields are missing, throw an exception to prevent misconfiguration
+        if (missing.isNotEmpty()) {
+            throw IllegalArgumentException(
+                "Missing required formatOrder values: $missing. Allowed values are: $allowedFields"
+            )
+        }
+    }
+
     /**
      * Adds a LogDestination to the configuration.
      * @param destination The destination to add.

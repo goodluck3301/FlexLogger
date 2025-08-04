@@ -2,6 +2,8 @@ package com.goodluck3301.flexlogger
 
 import android.app.Application
 import com.goodluck3301.flexlogger.log.FlexLogger
+import com.goodluck3301.flexlogger.log.LogField
+import com.goodluck3301.flexlogger.log.LogFormatSymbols
 import com.goodluck3301.flexlogger.log.LogLevel
 import java.io.File
 
@@ -36,6 +38,24 @@ class FlexLoggerApplication : Application() {
                     "${this@FlexLoggerApplication.packageName}/logs/app_log.txt"  // Subdirectory using package name, then "logs", then file name
                 ),
                 maxFileSizeMb = 1 // Maximum file size in MB before old log entries are trimmed (1MB here)
+            )
+
+            // Custom format order
+            formatOrder = listOf(
+                LogField.TIMESTAMP,
+                LogField.THREAD,
+                LogField.LEVEL,
+                LogField.TAG,
+                LogField.MESSAGE
+            )
+
+            // Custom formatting symbols
+            symbols = LogFormatSymbols(
+                levelSeparator = " → ",
+                threadPrefix = "<",
+                threadSuffix = ">",
+                messagePrefix = " :: ",
+                timestampSuffix = " | "
             )
         }
     }
