@@ -1,9 +1,24 @@
 package com.goodluck3301.flexlogger.log
 
+/**
+ * Defines all customizable symbols used to format a log message.
+ * Each field has optional prefix and suffix for full control.
+ */
 data class LogFormatSymbols(
-    val levelSeparator: String = "/",     // Between level and tag
-    val threadPrefix: String = "[",       // Before thread name
-    val threadSuffix: String = "]",       // After thread name
-    val messagePrefix: String = ": ",     // Before message text
-    val timestampSuffix: String = " "     // After timestamp
+    val timestampPrefix: String = "",
+    val timestampSuffix: String = " ",
+
+    val levelPrefix: String = "",
+    val levelSuffix: String = "/",
+
+    val tagPrefix: String = "",
+    val tagSuffix: String = "",
+
+    val threadPrefix: String = "[",
+    val threadSuffix: String = "]",
+
+    val messagePrefix: String = ": ",
+    val messageSuffix: String = "",
+
+    val tagSeparator: String = "/"
 )

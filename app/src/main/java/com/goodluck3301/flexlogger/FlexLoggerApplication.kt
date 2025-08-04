@@ -51,11 +51,17 @@ class FlexLoggerApplication : Application() {
 
             // Custom formatting symbols
             symbols = LogFormatSymbols(
-                levelSeparator = " → ",
-                threadPrefix = "<",
-                threadSuffix = ">",
-                messagePrefix = " :: ",
-                timestampSuffix = " | "
+                timestampPrefix = "<",
+                timestampSuffix = "> ",
+                levelPrefix = "(",
+                levelSuffix = ") → ",
+                tagPrefix = "[TAG: ",
+                tagSuffix = "] ",
+                tagSeparator = "::",
+                threadPrefix = "<T:",
+                threadSuffix = "> ",
+                messagePrefix = ":: ",
+                messageSuffix = " <<END>>"
             )
         }
     }

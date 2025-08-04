@@ -104,7 +104,7 @@ object FlexLogger {
 
     /**
      * Dynamically formats a LogMessage based on the 'formatOrder' list in the config.
-     * Symbols between fields are also customizable via the LoggerConfig.symbols field.
+     * Symbols around each field are customizable via the LoggerConfig.symbols field.
      */
     private fun format(log: LogMessage): String {
         val symbols = config.symbols
@@ -113,22 +113,33 @@ object FlexLogger {
             config.formatOrder.forEach { field ->
                 when (field) {
                     LogField.TIMESTAMP -> if (config.showTimestamp) {
+                        append(symbols.timestampPrefix)
                         append(dateFormatter.format(Date(log.timestamp)))
                         append(symbols.timestampSuffix)
                     }
+
                     LogField.LEVEL -> {
+                        append(symbols.levelPrefix)
                         append(log.level.name.first())
-                        append(symbols.levelSeparator)
+                        append(symbols.levelSuffix)
                     }
-                    LogField.TAG -> append(log.tag)
+
+                    LogField.TAG -> {
+                        append(symbols.tagPrefix)
+                        append(log.tag)
+                        append(symbols.tagSuffix)
+                    }
+
                     LogField.THREAD -> if (config.showThreadInfo) {
                         append(symbols.threadPrefix)
                         append(log.threadName)
                         append(symbols.threadSuffix)
                     }
+
                     LogField.MESSAGE -> {
                         append(symbols.messagePrefix)
                         append(log.message)
+                        append(symbols.messageSuffix)
                     }
                 }
             }
