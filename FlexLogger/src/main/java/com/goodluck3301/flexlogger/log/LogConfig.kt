@@ -19,7 +19,7 @@ data class LogConfig(
     var formatOrder: List<LogField> = allowedFields,
     var symbols: LogFormatSymbols = LogFormatSymbols(),
     var crashLogSize: CrashLogSize = CrashLogSize.LARGE,
-    internal val destinations: MutableSet<LogDestination> = mutableSetOf()
+    internal val destinations: MutableSet<LogDestination> = mutableSetOf(LogcatDestination())
 ) {
 
     init {
@@ -43,9 +43,28 @@ data class LogConfig(
 
     /**
      * Convenience function to add the default Logcat destination.
+     *
+     * @deprecated LogcatDestination is already added by default.
+     * Calling this function is no longer necessary.
      */
+    @Deprecated(
+        message = "LogcatDestination is already added by default. Calling this function is no longer necessary.",
+        replaceWith = ReplaceWith(""),
+        level = DeprecationLevel.WARNING
+    )
     fun logcat() {
+        removeLogcatDestination()
         addDestination(LogcatDestination())
+    }
+
+    /**
+     * Removes all LogcatDestination instances from the destinations set.
+     *
+     * This is useful when you want to disable logging to Logcat entirely,
+     * since a LogcatDestination is added by default in the initial configuration.
+     */
+    fun removeLogcatDestination() {
+        destinations.removeAll { it is LogcatDestination }
     }
 
     /**
