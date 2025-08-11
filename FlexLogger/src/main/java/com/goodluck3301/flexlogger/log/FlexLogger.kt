@@ -40,19 +40,41 @@ object FlexLogger {
         }
 
         if (newConfig.enableCrashLogging && newConfig.destinations.any { it is BaseFileDestination }) {
-            registerCrashLogger()
+            registerCrashLogger(newConfig.crashLogSize)
         }
     }
 
-    private fun registerCrashLogger() {
+    /**
+     * Registers a custom crash logger to capture uncaught exceptions and log them
+     * with a configurable level of detail.
+     *
+     * @param logSize The verbosity level for crash logs:
+     * - [CrashLogSize.SMALL]   : Only the crash message.
+     * - [CrashLogSize.MEDIUM]  : Crash message, thread name, and top stack trace element.
+     * - [CrashLogSize.LARGE]   : Full stack trace.
+     *
+     * The method replaces the default [Thread.UncaughtExceptionHandler] with a custom one.
+     * It delegates to the previously registered handler after logging, or terminates the process
+     * if no previous handler exists.
+     *
+     * This should be called early in the application lifecycle (e.g., in `Application.onCreate()`).
+     */
+    private fun registerCrashLogger(logSize: CrashLogSize) {
         val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            val crashMessage = "App crashed in thread: ${thread.name}\n" + Log.getStackTraceString(throwable)
+            val crashMessage = when (logSize) {
+                CrashLogSize.SMALL -> "App crashed: ${throwable.message ?: ""}"
+                CrashLogSize.MEDIUM -> buildString {
+                    append("App crashed: ${throwable.message ?: ""}")
+                    append("Thread: ${thread.name}")
+                    append("Top Stack Trace: ${throwable.stackTrace.firstOrNull()}")
+                }
+                CrashLogSize.LARGE -> "App crashed in thread: ${thread.name}\n" + Log.getStackTraceString(throwable)
+            }
 
-            log(LogLevel.ERROR, "CRASH", crashMessage, throwable, skipLogcat = true)
+            log(LogLevel.ERROR, "CRASH", crashMessage, null, skipLogcat = false)
 
-            // Let system or previous handler continue handling the crash
             previousHandler?.uncaughtException(thread, throwable) ?: run {
                 android.os.Process.killProcess(android.os.Process.myPid())
                 exitProcess(0)

@@ -18,6 +18,7 @@ data class LogConfig(
     var timestampFormat: String = "yyyy-MM-dd HH:mm:ss.SSS",
     var formatOrder: List<LogField> = allowedFields,
     var symbols: LogFormatSymbols = LogFormatSymbols(),
+    var crashLogSize: CrashLogSize = CrashLogSize.LARGE,
     internal val destinations: MutableSet<LogDestination> = mutableSetOf()
 ) {
 

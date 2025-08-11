@@ -1,6 +1,7 @@
 package com.goodluck3301.flexlogger
 
 import android.app.Application
+import com.goodluck3301.flexlogger.log.CrashLogSize
 import com.goodluck3301.flexlogger.log.FlexLogger
 import com.goodluck3301.flexlogger.log.LogField
 import com.goodluck3301.flexlogger.log.LogFormatSymbols
@@ -63,6 +64,8 @@ class FlexLoggerApplication : Application() {
                 messagePrefix = ":: ",
                 messageSuffix = " <<END>>"
             )
+
+            crashLogSize = CrashLogSize.MEDIUM
         }
     }
 }
