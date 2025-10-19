@@ -35,6 +35,7 @@
 - **Logcat** - Standard Android logging
 - **File Logging** - Persistent file storage
 - **Custom Destinations** - Extensible interface
+- **AI Crash Analysis** - Automatically analyzes crash messages and prints suggested solutions
 
 </td>
 </tr>
@@ -59,6 +60,7 @@
 </td>
 </tr>
 </table>
+
 
 ---
 
