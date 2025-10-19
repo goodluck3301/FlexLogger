@@ -1,4 +1,6 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.destination
+
+import com.goodluck3301.flexlogger.log.model.LogMessage
 
 /**
  * Defines a destination for log messages.

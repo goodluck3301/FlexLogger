@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google {
@@ -19,6 +21,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FlexLogger"
+rootProject.name = "FlexLoggerApp"
 include(":app")
 include(":FlexLogger")
+include(":features:ai")

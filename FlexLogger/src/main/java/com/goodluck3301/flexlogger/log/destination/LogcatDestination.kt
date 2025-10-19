@@ -1,6 +1,9 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.destination
 
 import android.util.Log
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+import com.goodluck3301.flexlogger.log.model.LogMessage
 
 /**
  * A LogDestination that writes log messages to Android's Logcat.

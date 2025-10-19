@@ -1,0 +1,107 @@
+package com.goodluck3301.flexlogger.log.model
+
+import android.content.Context
+import com.goodluck3301.flexlogger.log.enums.CrashLogSize
+import com.goodluck3301.flexlogger.log.destination.FileDestination
+import com.goodluck3301.flexlogger.log.destination.FileDestinationToSpecificFolder
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.enums.LogField
+import com.goodluck3301.flexlogger.log.model.LogFormatSymbols
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+import com.goodluck3301.flexlogger.log.destination.LogcatDestination
+import java.io.File
+
+/**
+ * Holds the configuration for the FlexLogger instance.
+ * This class is designed to be configured using a Kotlin DSL.
+ */
+data class LogConfig(
+    var enabled: Boolean = true,
+    var globalTagPrefix: String = "App",
+    var minLevel: LogLevel = LogLevel.VERBOSE,
+    var showTimestamp: Boolean = true,
+    var showThreadInfo: Boolean = true,
+    var enableCrashLogging: Boolean = true,
+    var timestampFormat: String = "yyyy-MM-dd HH:mm:ss.SSS",
+    var formatOrder: List<LogField> = LogField.Companion.allowedFields,
+    var symbols: LogFormatSymbols = LogFormatSymbols(),
+    var crashLogSize: CrashLogSize = CrashLogSize.LARGE,
+    var aiConfig: AiConfig? = null,
+    internal val destinations: MutableSet<LogDestination> = mutableSetOf(LogcatDestination())
+) {
+
+    init {
+        val missing = LogField.Companion.allowedFields.toSet().filterNot { it in formatOrder }
+
+        // If any required fields are missing, throw an exception to prevent misconfiguration
+        if (missing.isNotEmpty()) {
+            throw IllegalArgumentException(
+                "Missing required formatOrder values: $missing. Allowed values are: ${LogField.Companion.allowedFields}"
+            )
+        }
+    }
+
+    /**
+     * Adds a LogDestination to the configuration.
+     * @param destination The destination to add.
+     */
+    fun addDestination(destination: LogDestination) {
+        destinations.add(destination)
+    }
+
+    /**
+     * Convenience function to add the default Logcat destination.
+     *
+     * @deprecated LogcatDestination is already added by default.
+     * Calling this function is no longer necessary.
+     */
+    @Deprecated(
+        message = "LogcatDestination is already added by default. Calling this function is no longer necessary.",
+        replaceWith = ReplaceWith(""),
+        level = DeprecationLevel.WARNING
+    )
+    fun logcat() {
+        removeLogcatDestination()
+        addDestination(LogcatDestination())
+    }
+
+    /**
+     * Removes all LogcatDestination instances from the destinations set.
+     *
+     * This is useful when you want to disable logging to Logcat entirely,
+     * since a LogcatDestination is added by default in the initial configuration.
+     */
+    fun removeLogcatDestination() {
+        destinations.removeAll { it is LogcatDestination }
+    }
+
+    /**
+     * Convenience function to add a file logging destination with size-based rotation.
+     * @param context The application context, needed to resolve the file path.
+     * @param fileName The name of the log file.
+     * @param directory The directory within the app's cache folder to store the log file.
+     * @param maxFileSizeMb The maximum size in megabytes before the log file is cleared.
+     */
+    fun file(
+        context: Context,
+        fileName: String = "app_log.txt",
+        directory: String = "logs",
+        maxFileSizeMb: Int = 5
+    ) {
+        addDestination(FileDestination(context, fileName, directory, maxFileSizeMb))
+    }
+
+    /**
+     * Convenience function to add a file logging destination with size-based rotation.
+     *
+     * @param logFile The specific File object representing the log file's full path and name.
+     * @param maxFileSizeMb The maximum size in megabytes before the oldest log entries are trimmed.
+     */
+    fun file(
+        logFile: File,
+        maxFileSizeMb: Int = 5
+    ) {
+        addDestination(FileDestinationToSpecificFolder(logFile, maxFileSizeMb))
+    }
+
+}

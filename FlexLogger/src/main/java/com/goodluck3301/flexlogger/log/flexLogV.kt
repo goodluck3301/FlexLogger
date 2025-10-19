@@ -1,5 +1,7 @@
 package com.goodluck3301.flexlogger.log
 
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+
 @Deprecated(
     message = "This function is deprecated. Use log_v() instead.",
     replaceWith = ReplaceWith("log_v(tag, message())")

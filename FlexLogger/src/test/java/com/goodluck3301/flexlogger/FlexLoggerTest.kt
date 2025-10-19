@@ -1,6 +1,11 @@
 package com.goodluck3301.flexlogger
 
 import com.goodluck3301.flexlogger.log.*
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.enums.LogField
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+import com.goodluck3301.flexlogger.log.model.LogFormatSymbols
+import com.goodluck3301.flexlogger.log.model.LogMessage
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Before
@@ -131,6 +136,51 @@ class FlexLoggerTest {
         verify(mockDestination, atLeastOnce()).send(
             any(), contains("Received null or empty XML string.")
         )
+    }
+
+    @Test
+    fun `log uses custom formatOrder and symbols`() {
+        FlexLogger.init {
+            enabled = true
+            minLevel = LogLevel.DEBUG
+            globalTagPrefix = "TestApp"
+            showTimestamp = false
+            showThreadInfo = true
+
+            formatOrder = listOf(
+                LogField.TAG,
+                LogField.LEVEL,
+                LogField.THREAD,
+                LogField.MESSAGE
+            )
+
+            symbols = LogFormatSymbols(
+                tagSeparator = "/",
+                levelPrefix = "",
+                levelSuffix = " => ",
+                tagPrefix = "",
+                tagSuffix = "",
+                threadPrefix = "<<",
+                threadSuffix = ">>",
+                messagePrefix = " :: ",
+                messageSuffix = "",
+                timestampPrefix = "",
+                timestampSuffix = " ~ "
+            )
+
+            addDestination(mockDestination)
+        }
+
+        FlexLogger.d("FormatTag", "Formatting test")
+
+        val messageCaptor = argumentCaptor<String>()
+        verify(mockDestination).send(any(), messageCaptor.capture())
+        val formattedMessage = messageCaptor.firstValue
+
+        val expected = "TestApp/FormatTagD => <<Test worker>> :: Formatting test"
+        assert(formattedMessage == expected) {
+            "Expected:\n$expected\nBut got:\n$formattedMessage"
+        }
     }
 
 }

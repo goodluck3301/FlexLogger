@@ -1,6 +1,8 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.base
 
 import android.util.Log
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.model.LogMessage
 import java.io.File
 import java.io.FileWriter
 import java.util.concurrent.Executors

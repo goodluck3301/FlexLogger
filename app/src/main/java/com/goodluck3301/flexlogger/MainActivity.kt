@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.goodluck3301.flexlogger.log.FlexLogger
-import com.goodluck3301.flexlogger.log.LogLevel
+import com.goodluck3301.flexlogger.log.enums.LogLevel
 import com.goodluck3301.flexlogger.ui.theme.FlexLoggerTheme
 
 class MainActivity : ComponentActivity() {
