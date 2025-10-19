@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 rootProject.name = "FlexLoggerApp"
 include(":app")
 include(":FlexLogger")
+include(":features:ai")

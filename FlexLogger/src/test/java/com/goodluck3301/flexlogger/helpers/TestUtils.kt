@@ -1,6 +1,6 @@
 package com.goodluck3301.flexlogger.helpers
 
-import com.goodluck3301.flexlogger.log.FileDestination
+import com.goodluck3301.flexlogger.log.destination.FileDestination
 import java.io.File
 
 object TestUtils {

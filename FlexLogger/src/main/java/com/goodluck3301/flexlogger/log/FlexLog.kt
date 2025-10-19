@@ -1,5 +1,7 @@
 package com.goodluck3301.flexlogger.log
 
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+
 fun log_v(tag: String? = null, message: String) = FlexLogger.v(tag, message)
 fun log_d(tag: String? = null, message: String) = FlexLogger.d(tag, message)
 fun log_i(tag: String? = null, message: String) = FlexLogger.i(tag, message)

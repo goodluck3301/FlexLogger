@@ -1,4 +1,4 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.enums
 
 /**
  * Defines the severity levels for log messages.

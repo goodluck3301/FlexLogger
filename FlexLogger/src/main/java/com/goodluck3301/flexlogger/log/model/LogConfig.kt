@@ -1,7 +1,14 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.model
 
 import android.content.Context
-import com.goodluck3301.flexlogger.log.LogField.Companion.allowedFields
+import com.goodluck3301.flexlogger.log.enums.CrashLogSize
+import com.goodluck3301.flexlogger.log.destination.FileDestination
+import com.goodluck3301.flexlogger.log.destination.FileDestinationToSpecificFolder
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.enums.LogField
+import com.goodluck3301.flexlogger.log.model.LogFormatSymbols
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+import com.goodluck3301.flexlogger.log.destination.LogcatDestination
 import java.io.File
 
 /**
@@ -16,19 +23,20 @@ data class LogConfig(
     var showThreadInfo: Boolean = true,
     var enableCrashLogging: Boolean = true,
     var timestampFormat: String = "yyyy-MM-dd HH:mm:ss.SSS",
-    var formatOrder: List<LogField> = allowedFields,
+    var formatOrder: List<LogField> = LogField.Companion.allowedFields,
     var symbols: LogFormatSymbols = LogFormatSymbols(),
     var crashLogSize: CrashLogSize = CrashLogSize.LARGE,
+    var aiConfig: AiConfig? = null,
     internal val destinations: MutableSet<LogDestination> = mutableSetOf(LogcatDestination())
 ) {
 
     init {
-        val missing = allowedFields.toSet().filterNot { it in formatOrder }
+        val missing = LogField.Companion.allowedFields.toSet().filterNot { it in formatOrder }
 
         // If any required fields are missing, throw an exception to prevent misconfiguration
         if (missing.isNotEmpty()) {
             throw IllegalArgumentException(
-                "Missing required formatOrder values: $missing. Allowed values are: $allowedFields"
+                "Missing required formatOrder values: $missing. Allowed values are: ${LogField.Companion.allowedFields}"
             )
         }
     }

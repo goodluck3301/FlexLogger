@@ -1,6 +1,17 @@
 package com.goodluck3301.flexlogger.log
 
 import android.util.Log
+import com.goodluck3301.ai.api.GeminiApi
+import com.goodluck3301.ai.util.NetworkResult
+import com.goodluck3301.flexlogger.log.base.BaseFileDestination
+import com.goodluck3301.flexlogger.log.destination.LogcatDestination
+import com.goodluck3301.flexlogger.log.enums.CrashLogSize
+import com.goodluck3301.flexlogger.log.enums.LogField
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+import com.goodluck3301.flexlogger.log.model.LogConfig
+import com.goodluck3301.flexlogger.log.model.LogMessage
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -21,6 +32,7 @@ import kotlin.system.exitProcess
  */
 object FlexLogger {
 
+    private const val AI_TAG = "FlexLoggerAIHelper"
     private const val JSON_INDENT = 2
     private var config = LogConfig()
     private val dateFormatter = SimpleDateFormat(config.timestampFormat, Locale.US)
@@ -34,13 +46,21 @@ object FlexLogger {
     fun init(block: LogConfig.() -> Unit) {
         val newConfig = LogConfig().apply(block)
         this.config = newConfig
-        // Update date formatter if a custom format was provided
+        newConfig.also {
+            // Update date formatter if a custom format was provided
+            applyPattern(it)
+            registerCrashLogger((it))
+        }
+    }
+
+    /**
+     * Updates the timestamp format if a custom pattern is provided.
+     *
+     * @param newConfig The logging configuration containing the timestamp format.
+     */
+    private fun applyPattern(newConfig: LogConfig) {
         if (newConfig.timestampFormat != "yyyy-MM-dd HH:mm:ss.SSS") {
             dateFormatter.applyPattern(newConfig.timestampFormat)
-        }
-
-        if (newConfig.enableCrashLogging && newConfig.destinations.any { it is BaseFileDestination }) {
-            registerCrashLogger(newConfig.crashLogSize)
         }
     }
 
@@ -48,10 +68,7 @@ object FlexLogger {
      * Registers a custom crash logger to capture uncaught exceptions and log them
      * with a configurable level of detail.
      *
-     * @param logSize The verbosity level for crash logs:
-     * - [CrashLogSize.SMALL]   : Only the crash message.
-     * - [CrashLogSize.MEDIUM]  : Crash message, thread name, and top stack trace element.
-     * - [CrashLogSize.LARGE]   : Full stack trace.
+     * @param newConfig The logging configuration containing crash logging settings.
      *
      * The method replaces the default [Thread.UncaughtExceptionHandler] with a custom one.
      * It delegates to the previously registered handler after logging, or terminates the process
@@ -59,11 +76,11 @@ object FlexLogger {
      *
      * This should be called early in the application lifecycle (e.g., in `Application.onCreate()`).
      */
-    private fun registerCrashLogger(logSize: CrashLogSize) {
+    private fun registerCrashLogger(newConfig: LogConfig) {
         val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            val crashMessage = when (logSize) {
+            val crashMessage = when (newConfig.crashLogSize) {
                 CrashLogSize.SMALL -> "App crashed: ${throwable.message ?: ""}"
                 CrashLogSize.MEDIUM -> buildString {
                     append("App crashed: ${throwable.message ?: ""}")
@@ -73,12 +90,71 @@ object FlexLogger {
                 CrashLogSize.LARGE -> "App crashed in thread: ${thread.name}\n" + Log.getStackTraceString(throwable)
             }
 
-            log(LogLevel.ERROR, "CRASH", crashMessage, null, skipLogcat = false)
+            if (newConfig.enableCrashLogging && newConfig.destinations.any { it is BaseFileDestination }) {
+                log(LogLevel.ERROR, "CRASH", crashMessage, null, skipLogcat = false)
+            }
+
+            runAiDevHelper(crashMessage)
 
             previousHandler?.uncaughtException(thread, throwable) ?: run {
                 android.os.Process.killProcess(android.os.Process.myPid())
                 exitProcess(0)
             }
+        }
+    }
+
+    /**
+     * Sends the crash message to the AI service for automated analysis and logging.
+     *
+     * @param crashMessage The formatted crash message containing the error details.
+     */
+    private fun runAiDevHelper(crashMessage: String) {
+        val aiConfig = config.aiConfig
+        if (aiConfig != null) runBlocking {
+            Log.i(AI_TAG, "Processing crash message with AI helper...")
+
+            val response = GeminiApi().sendMessage(
+                prompt = crashMessage,
+                model = aiConfig.model,
+                key = aiConfig.apiKey,
+                language = aiConfig.languageResponse
+            )
+
+            when (response) {
+                is NetworkResult.Success -> wrapText(response.data ?: "")
+                NetworkResult.InvalidKey -> Log.e(AI_TAG, "AI processing failed: Invalid API key")
+                NetworkResult.InternetError -> Log.e(AI_TAG, "Please check your internet connection. Internet is not available.")
+                else -> Log.e(AI_TAG, "AI processing failed: Unexpected error")
+            }
+        }
+    }
+
+    /**
+     * Logs a long string to Logcat in chunks without breaking words.
+     *
+     * This function splits the input [text] into multiple lines of approximately [chunkSize] characters.
+     * It ensures that lines break at word boundaries (spaces) rather than in the middle of words.
+     * Each line is logged separately using Log.d with the AI_TAG.
+     *
+     * @param text The input string to be logged.
+     * @param chunkSize The approximate maximum number of characters per line (default is 100).
+     */
+    fun wrapText(text: String, chunkSize: Int = 100) {
+        var start = 0
+        val length = text.length
+
+        while (start < length) {
+            var end = (start + chunkSize).coerceAtMost(length)
+
+            if (end < length) {
+                val nextSpace = text.indexOf(' ', end)
+                if (nextSpace != -1) {
+                    end = nextSpace
+                }
+            }
+
+            Log.d(AI_TAG, text.substring(start, end).trim() + ' ')
+            start = end + 1
         }
     }
 

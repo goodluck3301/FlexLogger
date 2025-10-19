@@ -1,10 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    kotlin("plugin.serialization") version "2.2.20"
 }
 
 android {
-    namespace = "com.goodluck3301.flexlogger"
+    namespace = "com.goodluck3301.ai"
     compileSdk = 36
 
     defaultConfig {
@@ -33,17 +34,15 @@ android {
 }
 
 dependencies {
-    implementation(projects.features.ai)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.serialization.json)
 
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.robolectric)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+
 }

@@ -1,6 +1,11 @@
 package com.goodluck3301.flexlogger
 
 import com.goodluck3301.flexlogger.log.*
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.enums.LogField
+import com.goodluck3301.flexlogger.log.enums.LogLevel
+import com.goodluck3301.flexlogger.log.model.LogFormatSymbols
+import com.goodluck3301.flexlogger.log.model.LogMessage
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Before

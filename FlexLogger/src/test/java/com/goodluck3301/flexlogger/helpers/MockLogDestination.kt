@@ -1,6 +1,8 @@
 package com.goodluck3301.flexlogger.helpers
 
 import com.goodluck3301.flexlogger.log.*
+import com.goodluck3301.flexlogger.log.destination.LogDestination
+import com.goodluck3301.flexlogger.log.model.LogMessage
 import java.util.Collections.synchronizedList
 
 class MockLogDestination : LogDestination {

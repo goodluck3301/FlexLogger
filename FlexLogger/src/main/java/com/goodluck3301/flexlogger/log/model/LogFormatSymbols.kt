@@ -1,4 +1,4 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.model
 
 /**
  * Defines all customizable symbols used to format a log message.

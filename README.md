@@ -115,8 +115,6 @@ class MyApplication : Application() {
             showTimestamp = true
             showThreadInfo = true
             
-            // Add destinations
-            logcat()
             file(
                 context = this@MyApplication,
                 fileName = "app_log.txt",

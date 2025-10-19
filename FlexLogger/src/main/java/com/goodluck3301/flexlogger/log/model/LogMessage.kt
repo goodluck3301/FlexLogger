@@ -1,4 +1,6 @@
-package com.goodluck3301.flexlogger.log
+package com.goodluck3301.flexlogger.log.model
+
+import com.goodluck3301.flexlogger.log.enums.LogLevel
 
 /**
  * Represents a single log entry.
