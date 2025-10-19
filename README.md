@@ -76,7 +76,7 @@ dependencyResolutionManagement {
 
 // App module
 dependencies {
-    implementation("com.github.goodluck3301:FlexLogger:flexlogger-1.1")
+    implementation("com.github.goodluck3301:FlexLogger:flexlogger-1.2")
 }
 ```
 
@@ -93,7 +93,7 @@ dependencyResolutionManagement {
 
 // App module
 dependencies {
-    implementation 'com.github.goodluck3301:FlexLogger:flexlogger-1.1'
+    implementation 'com.github.goodluck3301:FlexLogger:flexlogger-1.2'
 }
 ```
 
