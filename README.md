@@ -6,7 +6,8 @@
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin-blue.svg)](https://kotlinlang.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![API](https://img.shields.io/badge/API-29%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=29)
-[![JitPack](https://img.shields.io/jitpack/v/goodluck3301/FlexLogger.svg)](https://jitpack.io/#goodluck3301/FlexLogger)
+[![](https://jitpack.io/v/goodluck3301/FlexLogger.svg)](https://jitpack.io/#goodluck3301/FlexLogger)
+
 
 *A flexible, configurable, and powerful logging utility for Android applications*
 
