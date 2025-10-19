@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         // Pretty print JSON
-        flexLogJson(TAG, """{"user": "John", "id": 123}""")
+        log_json(TAG, """{"user": "John", "id": 123}""")
     }
 }
 ```
@@ -181,8 +181,6 @@ FlexLogger.init {
     showThreadInfo = true                       // Include thread information
     timestampFormat = "yyyy-MM-dd HH:mm:ss.SSS" // Custom timestamp format
     
-    // Destinations
-    logcat()                                    // Android Logcat
     
     file(
         context = applicationContext,
@@ -219,18 +217,19 @@ FlexLogger.i("TAG", "Info message")
 FlexLogger.e("TAG", "Error message", exception)
 
 // Convenience functions with lambda (lazy evaluation)
-flexLogD("TAG") { "Expensive string operation: ${computeValue()}" }
-flexLogE("TAG", exception) { "Error occurred during ${operation}" }
+log_d("TAG", "Debug message")
+log_i("TAG", "Info message")
+log_e("TAG", "Error message", exception)
 ```
 
 #### Pretty Printing
 ```kotlin
 // JSON formatting
-flexLogJson("API") { responseJson }
+log_json("API", responseJson)
 FlexLogger.json("API", LogLevel.INFO, jsonString)
 
 // XML formatting
-flexLogXml("Parser") { xmlContent }
+log_xml("Parser", xmlContent )
 FlexLogger.xml("Parser", LogLevel.DEBUG, xmlString)
 ```
 
@@ -312,18 +311,20 @@ FlexLogger.init {
 ## 🏗️ Architecture
 
 ```mink
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Application   │───▶│   FlexLogger    │───▶│  Destinations   │
-│                 │    │                  │    │                 │
-│ log_i(...)      │    │ ┌──────────────┐ │    │ ┌─────────────┐ │
-│ log_e(...)      │    │ │ LogMessage   │ │    │ │  Logcat     │ │
-│ log_json(...)   │    │ │ - level      │ │    │ │  File       │ │
-└─────────────────┘    │ │ - tag        │ │    │ │  Custom     │ │
-                       │ │ - message    │ │    │ └─────────────┘ │
-                       │ │ - throwable  │ │    └─────────────────┘
-                       │ │ - timestamp  │ │
-                       │ └──────────────┘ │
-                       └──────────────────┘
+┌─────────────────┐    ┌─────────────────────────┐    ┌─────────────────┐
+│   Application   │───▶│       FlexLogger        │───▶│   Destinations  │
+│                 │    │                         │    │                 │
+│ log_i(...)      │    │ ┌─────────────────────┐ │    │ ┌─────────────┐ │
+│ log_e(...)      │    │ │    LogMessage       │ │    │ │   Logcat    │ │
+│ log_json(...)   │    │ │ - level             │ │    │ │   File      │ │
+└─────────────────┘    │ │ - tag               │ │    │ │   Custom    │ │
+                       │ │ - message           │ │    │ └─────────────┘ │
+                       │ │ - throwable         │ │    └─────────────────┘
+                       │ │ - timestamp         │ │
+                       │ │ - AI crash Analyzer │ │
+                       │ └─────────────────────┘ │
+                       └─────────────────────────┘
+                       
 ```
 
 ---
@@ -354,7 +355,6 @@ FlexLogger.init {
     showThreadInfo = false        // Reduce log verbosity
     
     if (BuildConfig.DEBUG) {
-        logcat()
         file(context = this@MyApplication, maxFileSizeMb = 5)
     }
 }
